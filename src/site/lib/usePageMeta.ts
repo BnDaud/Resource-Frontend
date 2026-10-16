@@ -19,7 +19,7 @@ export function usePageMeta({ title, description, image, jsonLd }: Meta) {
     setMeta('property', 'og:type', jsonLd ? 'product' : 'website')
     setMeta('property', 'og:url', window.location.href)
     if (description) { setMeta('name', 'description', description); setMeta('property', 'og:description', description) }
-    if (image) setMeta('property', 'og:image', image)
+    if (image) setMeta('property', 'og:image', image.startsWith('/') ? window.location.origin + image : image) // crawlers need an absolute address
     let script: HTMLScriptElement | null = null
     if (jsonLd) {
       script = document.createElement('script')

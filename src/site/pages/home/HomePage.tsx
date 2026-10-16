@@ -15,7 +15,7 @@ export default function HomePage() {
   usePageMeta({
     title: 'Resources Components',
     description: settings.seo_description || 'Quality components for kitchens, furniture and building projects. Browse the catalogue and request a wholesale or retail quotation.',
-    image: '/site/kitchen-white-brass.jpg',
+    image: '/site/plywood-stack.jpg',
   })
   return (
     <>
