@@ -1,0 +1,53 @@
+name: Test and deploy
+
+# Pushing to main tests the app, then deploys it to Vercel using the Vercel account's token.
+# (Vercel's own Git integration is not used, because on the free plan it only deploys commits
+# authored by the Vercel account owner.)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx tsc -b
+      - run: npm test
+
+  deploy:
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      # Add these three under Settings > Secrets and variables > Actions.
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Check the Vercel secrets exist
+        run: |
+          for v in VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID; do
+            if [ -z "${!v}" ]; then echo "::error::Missing GitHub secret $v"; exit 1; fi
+          done
+      - run: npm ci
+      - run: npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - run: npx vercel@latest build --prod --token="$VERCEL_TOKEN"
+      - run: npx vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN"
