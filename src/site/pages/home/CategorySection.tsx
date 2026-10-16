@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Container, SectionHeading } from '../../components/Container'
 import type { Category } from '../../types'
 
-const FALLBACK = ['/site/plywood-stack.jpg', '/site/range-hood.jpg', '/site/gas-hob.jpg', '/site/handles.jpg', '/site/oven-microwave.jpg', '/site/veneer-rolls.jpg', '/site/drawer-organiser.jpg']
+const FALLBACK = ['/site/glass-partition.jpg', '/site/heat-sink.jpg', '/site/utensils.jpg', '/site/door-lever.jpg', '/site/range-hood.jpg', '/site/steel-profiles.jpg', '/site/edge-banding.jpg']
 const SPAN = ['sm:col-span-2 sm:row-span-2', '', '', '', '', 'sm:col-span-2', 'sm:col-span-2']
 
 /** Chips for every category, then image tiles for the first seven (real product photos when available). */

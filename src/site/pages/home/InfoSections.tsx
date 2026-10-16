@@ -18,7 +18,7 @@ export function Intro() {
               <div className="rounded-2xl bg-white/10 p-5"><h3 className="font-bold text-gold">Retail</h3><p className="mt-1 text-sm text-slate-300">Homeowners and small projects welcome. Ask about availability.</p></div>
             </div>
           </div>
-          <div className="min-h-[16rem]"><img src="/site/veneer-rolls.jpg" alt="Rolled wood veneer sheets" loading="lazy" className="h-full w-full object-cover" /></div>
+          <div className="min-h-[16rem]"><img src="/site/door-lever.jpg" alt="Brass lever handle on a dark wooden door" loading="lazy" className="h-full w-full object-cover" /></div>
         </div>
       </Container>
     </section>

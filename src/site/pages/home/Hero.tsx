@@ -15,9 +15,9 @@ export function Hero() {
           </div>
         </div>
         <div className="relative mx-auto aspect-[5/4] w-full max-w-xl lg:max-w-none" aria-hidden="true">
-          <img src="/site/plywood-stack.jpg" alt="" className="absolute left-0 top-0 h-[86%] w-[78%] rounded-[2rem] object-cover shadow-card" />
-          <img src="/site/gas-hob.jpg" alt="" className="absolute right-0 top-[10%] h-[46%] w-[42%] rounded-3xl border-4 border-ice object-cover shadow-card" />
-          <img src="/site/oven-microwave.jpg" alt="" className="absolute bottom-0 right-[6%] h-[36%] w-[38%] rounded-3xl border-4 border-ice object-cover shadow-card" />
+          <img src="/site/glass-partition.jpg" alt="" className="absolute left-0 top-0 h-[86%] w-[78%] rounded-[2rem] object-cover shadow-card" />
+          <img src="/site/utensils.jpg" alt="" className="absolute right-0 top-[10%] h-[46%] w-[42%] rounded-3xl border-4 border-ice object-cover shadow-card" />
+          <img src="/site/veneer-rolls.jpg" alt="" className="absolute bottom-0 right-[6%] h-[36%] w-[38%] rounded-3xl border-4 border-ice object-cover shadow-card" />
           <div className="absolute bottom-[2%] left-[4%] rounded-2xl bg-navy px-4 py-3 text-white shadow-btn"><div className="text-sm font-bold">Quote in one list</div><div className="text-xs text-slate-300">Add many items, send once</div></div>
         </div>
       </Container>
