@@ -4,3 +4,9 @@
 node_modules/
 dist/
 *.tsbuildinfo
+
+# Local secret/ID files: never commit
+id.txt
+*.token
+vercel-ids*
+.vercel
