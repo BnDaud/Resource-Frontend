@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /admin
 Allow: /
 
-Sitemap: /sitemap.xml
+Sitemap: https://project-uxn0h.vercel.app/sitemap.xml
