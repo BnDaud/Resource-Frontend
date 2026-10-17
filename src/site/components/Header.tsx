@@ -1,4 +1,4 @@
-import { ChevronDown, ClipboardList, Menu, MessageCircle, Search, X } from 'lucide-react'
+import { ChevronDown, ClipboardList, Menu, Search, X } from 'lucide-react'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../../api/client'
@@ -77,7 +77,6 @@ export function Header() {
           <ClipboardList className="h-4 w-4" aria-hidden /><span className="hidden sm:inline">Quote list</span>
           <span className="grid h-5 min-w-[1.25rem] place-items-center rounded-full bg-gold px-1 text-[0.7rem] font-bold text-ink">{count}</span>
         </Link>
-        {wa && <a href={wa} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp" className="btn hidden h-11 w-11 !p-0 bg-emerald-700 text-white shadow-btn hover:bg-emerald-800 sm:inline-flex"><MessageCircle className="h-5 w-5" aria-hidden /></a>}
         <button className="grid h-11 w-11 shrink-0 place-items-center rounded-full hover:bg-ice lg:hidden" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>

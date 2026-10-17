@@ -1,6 +1,7 @@
-import { Mail, MessageCircle, Phone } from 'lucide-react'
+import { Mail, Phone } from 'lucide-react'
 import { useState } from 'react'
 import { waDigits } from '../lib/format'
+import { WhatsAppIcon } from './WhatsAppIcon'
 
 export interface MessageTemplate { label: string; text: string }
 
@@ -28,7 +29,7 @@ export function ContactButtons({ phone, email, emailSubject, templates }: Props)
         </div>
       )}
       <div className="flex flex-wrap gap-2">
-        <a className="btn btn-sm bg-emerald-700 text-white shadow-btn" href={wa} target="_blank" rel="noreferrer"><MessageCircle className="h-4 w-4" /> WhatsApp customer</a>
+        <a className="btn btn-sm bg-emerald-700 text-white shadow-btn" href={wa} target="_blank" rel="noreferrer"><WhatsAppIcon className="h-4 w-4" /> WhatsApp customer</a>
         <a className="btn-ghost btn-sm" href={`tel:${phone}`}><Phone className="h-4 w-4" /> Call</a>
         {email && <a className="btn-ghost btn-sm" href={`mailto:${email}${emailSubject ? `?subject=${encodeURIComponent(emailSubject)}` : ''}`}><Mail className="h-4 w-4" /> Email</a>}
       </div>

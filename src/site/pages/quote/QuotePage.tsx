@@ -4,6 +4,7 @@ import { EmptyState } from '../../../components/ui'
 import { Container } from '../../components/Container'
 import { WhatsAppButton } from '../../components/WhatsAppButton'
 import { useQuoteList, type QuoteLine } from '../../context/QuoteListContext'
+import { quoteListMessage } from '../../lib/quoteMessage'
 import { saveRequest } from '../../lib/savedRequests'
 import { usePageMeta } from '../../lib/usePageMeta'
 import { QuoteConfirmation } from './QuoteConfirmation'
@@ -17,7 +18,6 @@ export default function QuotePage() {
 
   if (sent) return <Container className="py-12"><QuoteConfirmation reference={sent.reference} lines={sent.lines} /></Container>
 
-  const listText = `Hello, I'd like a quote for:\n${lines.map((l) => `- ${l.name}${l.note ? ` (${l.note})` : ''} x ${l.quantity}`).join('\n')}`
   return (
     <Container className="py-10">
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Request a quotation</h1>
@@ -29,7 +29,7 @@ export default function QuotePage() {
           <section aria-label="Products in your quote list">
             <div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold">Your products ({lines.length})</h2><Link to="/products" className="text-sm font-bold text-gold-deep">+ Add more</Link></div>
             <QuoteLines />
-            <WhatsAppButton text={listText} className="btn-ghost mt-4 !text-emerald-800">Send this list on WhatsApp instead</WhatsAppButton>
+            <WhatsAppButton text={quoteListMessage(lines)} className="btn-ghost mt-4 !text-emerald-800">Send this list on WhatsApp instead</WhatsAppButton>
           </section>
           <QuoteForm onSent={(r) => {
             saveRequest({ reference: r.reference, kind: 'quote', phone: r.phone })

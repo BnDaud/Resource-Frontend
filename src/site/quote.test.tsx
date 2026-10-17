@@ -85,3 +85,19 @@ test('the WhatsApp buttons are hidden when no business number is configured', as
   await screen.findByText('Your products (1)')
   expect(screen.queryByRole('link', { name: /whatsapp/i })).not.toBeInTheDocument()
 })
+
+test('the floating WhatsApp button carries the quote list, or the normal greeting when the list is empty', async () => {
+  const cfg = { whatsapp_number: '2348000000000' }
+  listWithDoor(); api(siteHandler(undefined, cfg))
+  const { unmount } = mount('/products')
+  await screen.findAllByRole('button', { name: /add to quote/i })
+  const href = decodeURIComponent(screen.getAllByRole('link', { name: /chat on whatsapp/i }).slice(-1)[0].getAttribute('href')!)
+  expect(href).toContain('wa.me/2348000000000')
+  expect(href).toContain("I'd like a quote for:\n- Oak Door x 2")
+  unmount()
+
+  window.localStorage.clear(); api(siteHandler(undefined, cfg))
+  mount('/products')
+  await screen.findAllByRole('button', { name: /add to quote/i })
+  expect(decodeURIComponent(screen.getAllByRole('link', { name: /chat on whatsapp/i }).slice(-1)[0].getAttribute('href')!)).not.toContain('like a quote for')
+})
