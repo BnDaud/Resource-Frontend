@@ -16,7 +16,7 @@ export interface Product {
   brand: string; short_description: string; description: string; option_ids: number[]; specs: Spec[]
   availability: Availability; price_mode: PriceMode; public_price: string | null
   wholesale_note: string; stock_qty: number | null; is_featured: boolean; is_new: boolean; is_archived: boolean
-  main_image: string | null; images: ProductImage[]; created_at: string; updated_at: string
+  main_image: string | null; images: ProductImage[]; created_at: string
 }
 export interface Page<T> { items: T[]; total: number; page: number; page_size: number; pages: number }
 interface QuoteItem { id: number; product_id: string | null; product_name: string; product_sku: string; spec_note: string; quantity: number }
