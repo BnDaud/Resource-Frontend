@@ -10,7 +10,7 @@ It needs the API from the backend repo. In development Vite proxies `/api` and `
 ```
 src/
   api/        fetch client + types
-  components/ shared UI (ui/), PasswordInput, TagInput, ContactButtons
+  components/ shared UI (ui/), PasswordInput, ContactButtons, WhatsAppIcon, OptionPicker, Swatch
   lib/        hooks (useFetch, useDebounced, ...), status labels, formatting
   site/       the customer website: pages/, components/, context/ (settings, quote list), lib/
   admin/      the CMS, one folder per screen
