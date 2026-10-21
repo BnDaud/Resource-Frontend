@@ -30,9 +30,9 @@ function Details({ p }: { p: ProductDetail }) {
 
       <div className="mt-12 grid gap-6 lg:grid-cols-2">
         {p.description && <section className="rounded-3xl bg-white p-6 shadow-card sm:p-8"><h2 className="text-xl font-bold">Description</h2><p className="mt-3 whitespace-pre-line leading-relaxed text-slate-700">{p.description}</p></section>}
-        {p.specs.length > 0 && (
+        {(p.attributes.length > 0 || p.specs.length > 0) && (
           <section className="rounded-3xl bg-white p-6 shadow-card sm:p-8"><h2 className="text-xl font-bold">Specifications</h2>
-            <dl className="mt-3">{p.specs.map((s) => <div key={s.name} className="flex gap-4 border-t border-slate-100 py-3 text-sm first:border-0"><dt className="w-36 shrink-0 text-mute">{s.name}</dt><dd className="font-semibold">{s.value}</dd></div>)}</dl></section>
+            <dl className="mt-3">{[...p.attributes.map((a) => ({ name: a.name, value: a.options.map((o) => o.label).join(', ') })), ...p.specs].map((s) => <div key={s.name} className="flex gap-4 border-t border-slate-100 py-3 text-sm first:border-0"><dt className="w-36 shrink-0 text-mute">{s.name}</dt><dd className="font-semibold">{s.value}</dd></div>)}</dl></section>
         )}
       </div>
 

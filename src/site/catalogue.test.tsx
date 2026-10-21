@@ -88,6 +88,30 @@ test('product page shows details and 404s cleanly for unknown products', async (
   mount('/products/oak-door')
   expect(await screen.findByRole('heading', { name: 'Oak Door' })).toBeInTheDocument()
   expect(screen.getByText('Thickness')).toBeInTheDocument()
+  expect(screen.getByText('Pattern')).toBeInTheDocument()  // attributes are listed with the specifications
+  expect(screen.getByText('Synthetic')).toBeInTheDocument()
+})
+
+test('filter chips for finish and colour are sent to the API as option ids, and cleared again', async () => {
+  api(siteHandler())
+  mount('/products?section=boards&category=hdf')
+  const filters = await screen.findByRole('group', { name: 'Filters' })
+  await userEvent.click(within(filters).getByRole('button', { name: 'Glossy' }))
+  await userEvent.click(within(filters).getByRole('button', { name: 'Red' }))
+  await waitFor(() => expect(calls.some((c) => c.url.includes('opt=2') && c.url.includes('opt=3'))).toBe(true))
+  expect(within(filters).getByRole('button', { name: 'Glossy' })).toHaveAttribute('aria-pressed', 'true')
+  await userEvent.click(within(filters).getByRole('button', { name: 'Clear filters' }))
+  await waitFor(() => expect(within(filters).getByRole('button', { name: 'Glossy' })).toHaveAttribute('aria-pressed', 'false'))
+})
+
+test('on a product page the customer chooses finish and colour, and the choices go into the quote line', async () => {
+  api(siteHandler())
+  mount('/products/oak-door')
+  await userEvent.click(await screen.findByRole('button', { name: 'Glossy' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Red' }))
+  expect(screen.queryByRole('button', { name: 'Synthetic' })).not.toBeInTheDocument()  // a fact about the product, not a choice
+  await userEvent.click(screen.getByRole('button', { name: /add to quote list/i }))
+  expect(JSON.parse(window.localStorage.getItem('rc.quote')!)).toMatchObject([{ note: 'Finish: Glossy, Colour: Red' }])
 })
 
 test('unknown product slug shows the not-found page', async () => {

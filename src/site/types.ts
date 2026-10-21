@@ -5,6 +5,11 @@ export type Availability = 'available' | 'out_of_stock' | 'on_request' | 'discon
 export interface Category { id: number; name: string; slug: string; description: string; section: Section; product_count: number; cover_image: string | null }
 export interface ProductImage { id: number; url: string; alt: string; is_main: boolean }
 interface Spec { name: string; value: string }
+export interface Option { id: number; label: string; color: string | null }
+/** A filter the website offers for a category or division. */
+export interface Attribute { id: number; name: string; options: Option[] }
+/** One attribute of a product with the options that product has. */
+interface ProductAttribute extends Attribute { customer_picks: boolean }
 
 /** What the public API returns for a product card. Staff-only fields are never present. */
 export interface Product {
@@ -13,7 +18,7 @@ export interface Product {
   is_featured: boolean; is_new: boolean; main_image: string | null
 }
 export interface ProductDetail extends Product {
-  description: string; sizes: string[]; colours: string[]; specs: Spec[]; images: ProductImage[]; category_slug: string
+  description: string; attributes: ProductAttribute[]; specs: Spec[]; images: ProductImage[]; category_slug: string
 }
 export interface ProductPage { items: Product[]; total: number; page: number; page_size: number; pages: number }
 

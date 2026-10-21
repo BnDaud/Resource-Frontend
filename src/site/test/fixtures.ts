@@ -8,7 +8,9 @@ export const product = (id: string, name: string, extra: Record<string, unknown>
   short_description: `${name} short`, availability: 'available', price_mode: 'request', public_price: null, is_featured: false, is_new: false,
   main_image: null, created_at: '2026-10-01T00:00:00Z', ...extra,
 })
-const detail = (p: ReturnType<typeof product>) => ({ ...p, description: 'Full description', sizes: ['2100x900'], colours: ['Oak'], specs: [{ name: 'Thickness', value: '40 mm' }], images: [], category_slug: 'hdf' })
+const FINISH = { id: 1, name: 'Finish', options: [{ id: 1, label: 'Matte', color: null }, { id: 2, label: 'Glossy', color: null }] }
+const COLOUR = { id: 2, name: 'Colour', options: [{ id: 3, label: 'Red', color: '#c0392b' }, { id: 4, label: 'White', color: '#ffffff' }] }
+const detail = (p: ReturnType<typeof product>) => ({ ...p, description: 'Full description', attributes: [{ ...FINISH, customer_picks: true }, { ...COLOUR, customer_picks: true }, { id: 3, name: 'Pattern', customer_picks: false, options: [{ id: 5, label: 'Synthetic', color: null }] }], specs: [{ name: 'Thickness', value: '40 mm' }], images: [], category_slug: 'hdf' })
 export const page = (items: unknown[]) => ({ items, total: items.length, page: 1, page_size: 12, pages: 1 })
 const category = (id: number, name: string, slug: string, section: string) => ({ id, name, slug, description: '', section, product_count: 2, cover_image: null, sort_order: id })
 
@@ -27,6 +29,7 @@ export function siteHandler(extra: (url: string, init?: RequestInit) => Reply | 
     if (e) return e
     if (url.includes('/api/v1/settings')) return { status: 200, body: settings(over) }
     if (url.includes('/api/v1/categories')) return { status: 200, body: [category(1, 'HDF', 'hdf', 'boards'), category(2, 'MDF', 'mdf', 'boards'), category(3, 'Edges Tape', 'edges-tape', 'accessories')] }
+    if (url.includes('/api/v1/attributes')) return { status: 200, body: [FINISH, COLOUR].map((a) => ({ ...a, filterable: true, customer_picks: true, section: null, category_id: null })) }
     if (url.includes('/api/v1/testimonials')) return { status: 200, body: [] }
     if (/\/products\/[^/?]+\/related/.test(url)) return { status: 200, body: [] }
     if (url.includes('/products/oak-door')) return { status: 200, body: detail(DOOR) }

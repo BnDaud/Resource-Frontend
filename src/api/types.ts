@@ -12,7 +12,7 @@ export interface ProductImage { id: number; url: string; alt: string; is_main: b
 interface Spec { name: string; value: string }
 export interface Product {
   id: string; name: string; slug: string; sku: string; category_id: number; category_name: string; category_slug: string
-  brand: string; short_description: string; description: string; sizes: string[]; colours: string[]; specs: Spec[]
+  brand: string; short_description: string; description: string; option_ids: number[]; specs: Spec[]
   availability: Availability; price_mode: PriceMode; public_price: string | null
   wholesale_note: string; stock_qty: number | null; is_featured: boolean; is_new: boolean; is_archived: boolean
   main_image: string | null; images: ProductImage[]; created_at: string; updated_at: string
@@ -31,3 +31,9 @@ export interface Dashboard {
   total_products: number; total_categories: number; new_enquiries: number; outstanding_quotes: number
   out_of_stock: number; published_testimonials: number; recent_quotes: QuoteListItem[]; recent_enquiries: Enquiry[]
 }
+
+export interface OptionDef { id?: number; label: string; color: string | null }
+/** An attribute as staff edit it (finish, colour, size, ...). New ones have no id yet. */
+export interface AttributeDef { id?: number; name: string; filterable: boolean; customer_picks: boolean; options: OptionDef[] }
+/** What a category can offer on its products: its division's attributes plus its own. */
+export interface CategoryAttribute extends AttributeDef { id: number; options: (OptionDef & { id: number })[] }

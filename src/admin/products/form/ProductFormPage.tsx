@@ -8,10 +8,11 @@ import { ConfirmButton, ErrorNote, PageHeader, Spinner, useToast } from '../../.
 import { useFetch } from '../../../lib/useFetch'
 import { BasicsSection } from './BasicsSection'
 import { ImageManager } from './ImageManager'
+import { OptionsSection } from './OptionsSection'
 import { blankProduct, toFormValues, toPayload } from './mappers'
 import { productSchema, type ProductFormValues } from './schema'
 import { AvailabilityPanel, PricingPanel, StaffOnlyPanel } from './SidePanels'
-import { VariantsSection } from './VariantsSection'
+import { SpecsSection } from './SpecsSection'
 
 /** Keyed by id so moving from /new to /:id after saving mounts a fresh form instead of reusing stale state. */
 export default function ProductFormPage() {
@@ -75,7 +76,8 @@ function ProductForm({ id }: { id?: string }) {
               <h2 className="mb-1 text-base font-bold">Images</h2>
               {isNew ? <p className="text-sm text-mute">Save the product first, then you can upload images.</p> : <ImageManager productId={id!} images={images} onChange={setImages} />}
             </section>
-            <VariantsSection />
+            <OptionsSection />
+            <SpecsSection />
           </div>
           <aside className="space-y-4">
             <AvailabilityPanel />

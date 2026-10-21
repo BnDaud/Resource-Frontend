@@ -2,7 +2,7 @@ import { Search } from 'lucide-react'
 import { SECTIONS, type Section } from '../../../lib/sections'
 import type { Category } from '../../types'
 
-export interface Filters { q: string; section: Section; category: string; availability: string; sort: string }
+export interface Filters { q: string; section: Section; category: string; opts: number[]; availability: string; sort: string }
 
 const AVAILABILITY = [['', 'Any availability'], ['available', 'Available'], ['on_request', 'On request'], ['out_of_stock', 'Out of stock']]
 const SORTS = [['relevance', 'Relevance'], ['newest', 'Newest'], ['alpha', 'A to Z']]

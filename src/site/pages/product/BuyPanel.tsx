@@ -2,30 +2,30 @@ import { Minus, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AvailabilityBadge, PriceLine } from '../../components/AvailabilityBadge'
+import { Swatch } from '../../../components/Swatch'
 import { WhatsAppButton } from '../../components/WhatsAppButton'
 import { useQuoteList } from '../../context/QuoteListContext'
-import type { ProductDetail } from '../../types'
+import type { Option, ProductDetail } from '../../types'
 
-function Pills({ label, options, value, onChange }: { label: string; options: string[]; value: string; onChange: (v: string) => void }) {
-  if (options.length === 0) return null
+function Pills({ label, options, value, onChange }: { label: string; options: Option[]; value: string; onChange: (v: string) => void }) {
   return (
     <fieldset className="mt-5">
       <legend className="mb-2 text-sm font-bold">{label}</legend>
       <div className="flex flex-wrap gap-2">
-        {options.map((o) => <button key={o} type="button" aria-pressed={value === o} onClick={() => onChange(value === o ? '' : o)}
-          className={`btn btn-sm ${value === o ? 'bg-navy text-white shadow-btn' : 'bg-white text-ink ring-1 ring-inset ring-line hover:ring-navy'}`}>{o}</button>)}
+        {options.map((o) => <button key={o.id} type="button" aria-pressed={value === o.label} onClick={() => onChange(value === o.label ? '' : o.label)}
+          className={`btn btn-sm gap-2 ${value === o.label ? 'bg-navy text-white shadow-btn' : 'bg-white text-ink ring-1 ring-inset ring-line hover:ring-navy'}`}><Swatch color={o.color} />{o.label}</button>)}
       </div>
     </fieldset>
   )
 }
 
-/** Size/colour choice, quantity and the Add to quote action. The choice is saved as a note on the quote line. */
+/** The choices a product offers (finish, colour, size, ...), quantity and the Add to quote action. The choices are saved as a note on the quote line. */
 export function BuyPanel({ product: p }: { product: ProductDetail }) {
   const { add, has } = useQuoteList()
-  const [size, setSize] = useState('')
-  const [colour, setColour] = useState('')
+  const [chosen, setChosen] = useState<Record<number, string>>({})  // attribute id -> option label
   const [qty, setQty] = useState(1)
-  const note = [size, colour].filter(Boolean).join(', ')
+  const choices = p.attributes.filter((a) => a.customer_picks && a.options.length > 1)
+  const note = choices.filter((a) => chosen[a.id]).map((a) => `${a.name}: ${chosen[a.id]}`).join(', ')
   const added = has(p.id)
   const addNow = () => add({ productId: p.id, slug: p.slug, name: p.name, sku: p.sku, category: p.category_name, image: p.main_image, note }, qty)
 
@@ -37,8 +37,7 @@ export function BuyPanel({ product: p }: { product: ProductDetail }) {
       <div className="mt-4 flex flex-wrap items-center gap-3"><AvailabilityBadge value={p.availability} /><span className="text-xs text-mute">Availability is confirmed when we reply to your request.</span></div>
       <PriceLine mode={p.price_mode} price={p.public_price} className="mt-4 block font-display text-2xl font-bold" />
       {p.short_description && <p className="mt-4 leading-relaxed text-slate-600">{p.short_description}</p>}
-      <Pills label="Size" options={p.sizes} value={size} onChange={setSize} />
-      <Pills label="Colour / finish" options={p.colours} value={colour} onChange={setColour} />
+      {choices.map((a) => <Pills key={a.id} label={a.name} options={a.options} value={chosen[a.id] ?? ''} onChange={(v) => setChosen({ ...chosen, [a.id]: v })} />)}
 
       {p.availability === 'discontinued' ? <p className="mt-6 rounded-2xl bg-ice p-4 text-sm font-semibold">This product is discontinued. Contact us for alternatives.</p> : (
         <div className="mt-6 flex flex-wrap items-center gap-3">

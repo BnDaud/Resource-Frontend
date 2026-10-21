@@ -46,9 +46,12 @@ async function request<T>(method: string, path: string, body?: unknown, form?: F
 }
 
 export const api = {
-  get: <T>(p: string, params?: Record<string, string | number | boolean | undefined | null>) => {
+  get: <T>(p: string, params?: Record<string, string | number | boolean | number[] | undefined | null>) => {
     const qs = new URLSearchParams()
-    Object.entries(params ?? {}).forEach(([k, v]) => v !== undefined && v !== null && v !== '' && qs.set(k, String(v)))
+    Object.entries(params ?? {}).forEach(([k, v]) => {
+      if (Array.isArray(v)) v.forEach((x) => qs.append(k, String(x)))
+      else if (v !== undefined && v !== null && v !== '') qs.set(k, String(v))
+    })
     const s = qs.toString()
     return request<T>('GET', s ? `${p}?${s}` : p)
   },
