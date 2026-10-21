@@ -80,3 +80,22 @@ test('staff can paste a colour sheet into a choice, with codes and swatches, and
   const sent = JSON.parse(calls.find((c) => c.init?.method === 'PUT')!.init!.body as string)
   expect(sent[0].options).toEqual([{ label: 'Traffic red', code: 'RAL 3020', color: '#cc0605' }, { label: 'Pure white', code: 'RAL 9010', color: '#f4f4f4' }])
 })
+
+test('opening an existing product shows the options it already has, and saving keeps them', async () => {
+  const product = { id: '22222222-2222-4222-8222-222222222222', name: 'Glossy board', sku: 'G-1', category_id: 1, brand: '', short_description: '', description: '', option_ids: [2], specs: [], images: [],
+    availability: 'available', price_mode: 'request', public_price: null, wholesale_note: '', stock_qty: null, is_featured: false, is_new: false, is_archived: false }
+  api((url) => {
+    if (url.includes('/auth/me')) return { status: 200, body: staff('admin') }
+    if (url.includes('/admin/categories/1/attributes')) return { status: 200, body: [finish] }
+    if (url.includes('/admin/categories')) return { status: 200, body: cats }
+    if (url.includes('/admin/products/')) return { status: 200, body: product }
+    return { status: 404 }
+  })
+  mount(`/admin/products/${product.id}`)
+  expect(await screen.findByRole('button', { name: 'Glossy' })).toHaveAttribute('aria-pressed', 'true')  // the product's own option is ticked
+  expect(screen.getByRole('button', { name: 'Matte' })).toHaveAttribute('aria-pressed', 'false')
+  await userEvent.click(screen.getByRole('button', { name: 'Matte' }))
+  await userEvent.click(screen.getByRole('button', { name: /save product/i }))
+  await waitFor(() => expect(calls.some((c) => c.init?.method === 'PUT' && c.url.includes('/admin/products/'))).toBe(true))
+  expect(JSON.parse(calls.find((c) => c.init?.method === 'PUT')!.init!.body as string).option_ids.sort()).toEqual([1, 2])
+})

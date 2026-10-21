@@ -12,15 +12,18 @@ import type { ProductFormValues } from './schema'
 export function OptionsSection() {
   const { control, watch, setValue, getValues } = useFormContext<ProductFormValues>()
   const categoryId = watch('category_id')
-  const { data, loading } = useFetch(() => (categoryId ? api.get<CategoryAttribute[]>(`/admin/categories/${categoryId}/attributes`) : Promise.resolve([])), [categoryId])
+  const fetched = useFetch(async () => ({ forCategory: categoryId, list: categoryId ? await api.get<CategoryAttribute[]>(`/admin/categories/${categoryId}/attributes`) : [] }), [categoryId])
+  // Only use a list that belongs to the category now chosen: while a new one loads, the old one must not be trusted.
+  const data = fetched.data?.forCategory === categoryId ? fetched.data.list : null
+  const loading = fetched.loading
 
   // Moving to another category: drop the options that category does not offer.
   useEffect(() => {
-    if (!data) return
+    if (!data || !categoryId) return
     const allowed = new Set(data.flatMap((a) => a.options.map((o) => o.id)))
     const kept = getValues('option_ids').filter((id) => allowed.has(id))
     if (kept.length !== getValues('option_ids').length) setValue('option_ids', kept, { shouldDirty: true })
-  }, [data, getValues, setValue])
+  }, [data, categoryId, getValues, setValue])
 
   return (
     <section className="card">
