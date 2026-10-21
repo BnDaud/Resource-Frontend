@@ -99,3 +99,25 @@ test('opening an existing product shows the options it already has, and saving k
   await waitFor(() => expect(calls.some((c) => c.init?.method === 'PUT' && c.url.includes('/admin/products/'))).toBe(true))
   expect(JSON.parse(calls.find((c) => c.init?.method === 'PUT')!.init!.body as string).option_ids.sort()).toEqual([1, 2])
 })
+
+test('a long colour list in the product form is picked from the grid; the count is that list only, and other choices are kept', async () => {
+  const sheet = { id: 8, name: 'Special colour', filterable: true, customer_picks: true, section: 'boards', category_id: null, options: Array.from({ length: 20 }, (_, i) => ({ id: 100 + i, label: `Shade ${i}`, code: `RAL ${3000 + i}`, color: '#c0392b', image_url: null })) }
+  const product = { id: '33333333-3333-4333-8333-333333333333', name: 'Board', sku: 'B-1', category_id: 1, brand: '', short_description: '', description: '', option_ids: [2, 101, 102], specs: [], images: [],
+    availability: 'available', price_mode: 'request', public_price: null, wholesale_note: '', stock_qty: null, is_featured: false, is_new: false, is_archived: false }
+  api((url) => {
+    if (url.includes('/auth/me')) return { status: 200, body: staff('admin') }
+    if (url.includes('/admin/categories/1/attributes')) return { status: 200, body: [finish, sheet] }
+    if (url.includes('/admin/categories')) return { status: 200, body: cats }
+    if (url.includes('/admin/products/')) return { status: 200, body: product }
+    return { status: 404 }
+  })
+  mount(`/admin/products/${product.id}`)
+  await userEvent.click(await screen.findByRole('button', { name: '2 of 20 selected · change' }))
+  const grid = within(await screen.findByRole('dialog'))
+  expect(grid.getByText('2 selected')).toBeInTheDocument()  // not 3: Glossy belongs to another choice
+  await userEvent.click(grid.getByRole('button', { name: /RAL 3005/ }))
+  await userEvent.click(grid.getByRole('button', { name: 'Done' }))
+  await userEvent.click(screen.getByRole('button', { name: /save product/i }))
+  await waitFor(() => expect(calls.some((c) => c.init?.method === 'PUT' && c.url.includes('/admin/products/'))).toBe(true))
+  expect(JSON.parse(calls.find((c) => c.init?.method === 'PUT')!.init!.body as string).option_ids.sort((a: number, b: number) => a - b)).toEqual([2, 101, 102, 105])
+})

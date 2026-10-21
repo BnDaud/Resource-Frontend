@@ -39,7 +39,7 @@ export function OptionsSection() {
                   <legend className="mb-2 text-sm font-bold">{a.name}</legend>
                   <div className="flex flex-wrap gap-2">
                     {a.options.length > MANY
-                      ? <PickerButton name={a.name} options={a.options} multi selected={field.value} onChange={(ids) => field.onChange([...field.value.filter((x) => !a.options.some((o) => o.id === x)), ...ids])} />
+                      ? <PickerButton name={a.name} options={a.options} multi selected={field.value.filter((x) => a.options.some((o) => o.id === x))} onChange={(ids) => field.onChange([...field.value.filter((x) => !a.options.some((o) => o.id === x)), ...ids])} />
                       : a.options.map((o) => {
                         const on = field.value.includes(o.id)
                         return (
