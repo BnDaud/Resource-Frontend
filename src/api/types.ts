@@ -1,3 +1,4 @@
+import type { Option } from '../lib/options'
 import type { Section } from '../lib/sections'
 
 export type Role = 'admin' | 'editor'
@@ -32,8 +33,8 @@ export interface Dashboard {
   out_of_stock: number; published_testimonials: number; recent_quotes: QuoteListItem[]; recent_enquiries: Enquiry[]
 }
 
-export interface OptionDef { id?: number; label: string; color: string | null }
+export interface OptionDef { id?: number; label: string; code?: string | null; color: string | null; image_url?: string | null }
 /** An attribute as staff edit it (finish, colour, size, ...). New ones have no id yet. */
 export interface AttributeDef { id?: number; name: string; filterable: boolean; customer_picks: boolean; options: OptionDef[] }
 /** What a category can offer on its products: its division's attributes plus its own. */
-export interface CategoryAttribute extends AttributeDef { id: number; options: (OptionDef & { id: number })[] }
+export interface CategoryAttribute { id: number; name: string; filterable: boolean; customer_picks: boolean; options: Option[] }

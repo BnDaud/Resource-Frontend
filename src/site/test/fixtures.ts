@@ -20,6 +20,9 @@ const settings = (over: Record<string, string> = {}) => ({
 })
 
 export const DOOR = product(U1, 'Oak Door')
+export const doorWith = (attributes: unknown[]) => ({ ...detail(DOOR), attributes })
+/** A long colour sheet: `count` options with RAL-style codes. */
+export const colourSheet = (count: number) => Array.from({ length: count }, (_, i) => ({ id: 100 + i, label: `Shade ${i}`, code: `RAL ${3000 + i}`, color: '#c0392b', image_url: null }))
 const TAPE = product(U2, 'Edge Tape', { category_name: 'Edges Tape', availability: 'on_request' })
 
 /** Public API served from memory. `extra` can answer or override any route; return undefined to fall through. */

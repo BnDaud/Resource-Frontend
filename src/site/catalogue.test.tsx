@@ -2,7 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, test } from 'vitest'
 import { calls, mount, useMockApi } from '../test/utils'
-import { DOOR, page, product, siteHandler } from './test/fixtures'
+import { colourSheet, DOOR, doorWith, page, product, siteHandler } from './test/fixtures'
 
 const api = useMockApi()
 beforeEach(() => window.localStorage.clear())
@@ -131,4 +131,30 @@ test('unknown product slug shows the not-found page', async () => {
   api(siteHandler((url) => (url.includes('/products/nope') ? { status: 404, body: { detail: 'Product not found' } } : undefined)))
   mount('/products/nope')
   expect(await screen.findByRole('heading', { name: /could not find that page/i })).toBeInTheDocument()
+})
+
+const SPECIAL = { id: 9, name: 'Special colour', customer_picks: true, options: colourSheet(20) }
+
+test('a long colour sheet is chosen from a searchable grid on the product page, and the code goes into the quote line', async () => {
+  api(siteHandler((url) => (url.includes('/products/oak-door') ? { status: 200, body: doorWith([SPECIAL]) } : undefined)))
+  mount('/products/oak-door')
+  await userEvent.click(await screen.findByRole('button', { name: /choose special colour \(20\)/i }))
+  const grid = within(await screen.findByRole('dialog'))
+  await userEvent.type(grid.getByLabelText('Search'), '3007')
+  expect(grid.getAllByRole('button', { pressed: false })).toHaveLength(1)  // only RAL 3007 is left
+  await userEvent.click(grid.getByRole('button', { name: /RAL 3007/ }))
+  expect(await screen.findByRole('button', { name: /RAL 3007 · Shade 7/ })).toBeInTheDocument()  // the chosen colour is shown on the button
+  await userEvent.click(screen.getByRole('button', { name: /add to quote list/i }))
+  expect(JSON.parse(window.localStorage.getItem('rc.quote')!)).toMatchObject([{ note: 'Special colour: RAL 3007 · Shade 7' }])
+})
+
+test('on the catalogue a long colour sheet is one filter row that opens the grid; one choice, and it can be cleared', async () => {
+  api(siteHandler((url) => (url.includes('/api/v1/attributes') ? { status: 200, body: [{ ...SPECIAL, filterable: true }] } : undefined)))
+  mount('/products?section=boards')
+  await userEvent.click(await screen.findByRole('button', { name: /choose special colour \(20\)/i }))
+  await userEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: /RAL 3002/ }))  // single choice: the grid closes
+  await waitFor(() => expect(calls.some((c) => c.url.includes('opt=102'))).toBe(true))
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  await userEvent.click(screen.getByRole('button', { name: 'Clear Special colour' }))
+  await waitFor(() => expect(screen.getByRole('button', { name: /choose special colour/i })).toBeInTheDocument())
 })

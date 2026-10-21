@@ -29,7 +29,7 @@ test('the Categories page is grouped by division and staff can edit the filters 
   await userEvent.type(option, 'High gloss')
   await userEvent.click(screen.getByRole('button', { name: '+ Add a choice' }))
   await userEvent.type(screen.getAllByLabelText('Name of the choice')[1], 'Thickness')
-  await userEvent.type(screen.getAllByLabelText(/option 1/)[1], '18 mm')
+  await userEvent.type(screen.getByLabelText('Thickness option 1'), '18 mm')
   await userEvent.click(screen.getByRole('button', { name: 'Save' }))
 
   await waitFor(() => expect(calls.some((c) => c.init?.method === 'PUT' && c.url.includes('/admin/attributes?scope=category:1'))).toBe(true))
@@ -59,4 +59,24 @@ test('the product form offers the choices of the selected category and sends the
   const body = JSON.parse(calls.find((c) => c.init?.method === 'POST')!.init!.body as string)
   expect(body).toMatchObject({ category_id: 1, option_ids: [2] })
   expect(body).not.toHaveProperty('sizes')
+})
+
+test('staff can paste a colour sheet into a choice, with codes and swatches, and save it', async () => {
+  api((url) => {
+    if (url.includes('/auth/me')) return { status: 200, body: staff('admin') }
+    if (url.includes('/admin/attributes')) return { status: 200, body: [{ ...finish, name: 'Special colour', options: [] }] }
+    if (url.includes('/admin/categories')) return { status: 200, body: cats }
+    return { status: 404 }
+  })
+  mount('/admin/categories')
+  await userEvent.click(await screen.findByRole('button', { name: 'Filters for all boards' }))
+  await userEvent.click(await screen.findByRole('button', { name: 'Paste a list' }))
+  await userEvent.click(screen.getByLabelText(/One option per line/))
+  await userEvent.paste('RAL 3020, Traffic red, #cc0605\nRAL 9010, Pure white, #f4f4f4\nRAL 3020, Traffic red again')
+  await userEvent.click(screen.getByRole('button', { name: 'Add these' }))
+  expect(screen.getByLabelText('Special colour option 2 code')).toHaveValue('RAL 9010')  // the repeated code was skipped
+  await userEvent.click(screen.getByRole('button', { name: 'Save' }))
+  await waitFor(() => expect(calls.some((c) => c.init?.method === 'PUT')).toBe(true))
+  const sent = JSON.parse(calls.find((c) => c.init?.method === 'PUT')!.init!.body as string)
+  expect(sent[0].options).toEqual([{ label: 'Traffic red', code: 'RAL 3020', color: '#cc0605' }, { label: 'Pure white', code: 'RAL 9010', color: '#f4f4f4' }])
 })

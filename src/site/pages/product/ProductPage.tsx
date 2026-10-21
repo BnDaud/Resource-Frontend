@@ -1,6 +1,8 @@
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../../../api/client'
+import { Swatch } from '../../../components/Swatch'
 import { ErrorNote, Spinner } from '../../../components/ui'
+import { optionName } from '../../../lib/options'
 import { useFetch } from '../../../lib/useFetch'
 import { Container, SectionHeading } from '../../components/Container'
 import { ProductGrid } from '../../components/ProductCard'
@@ -32,7 +34,7 @@ function Details({ p }: { p: ProductDetail }) {
         {p.description && <section className="rounded-3xl bg-white p-6 shadow-card sm:p-8"><h2 className="text-xl font-bold">Description</h2><p className="mt-3 whitespace-pre-line leading-relaxed text-slate-700">{p.description}</p></section>}
         {(p.attributes.length > 0 || p.specs.length > 0) && (
           <section className="rounded-3xl bg-white p-6 shadow-card sm:p-8"><h2 className="text-xl font-bold">Specifications</h2>
-            <dl className="mt-3">{[...p.attributes.map((a) => ({ name: a.name, value: a.options.map((o) => o.label).join(', ') })), ...p.specs].map((s) => <div key={s.name} className="flex gap-4 border-t border-slate-100 py-3 text-sm first:border-0"><dt className="w-36 shrink-0 text-mute">{s.name}</dt><dd className="font-semibold">{s.value}</dd></div>)}</dl></section>
+            <dl className="mt-3">{[...p.attributes.map((a) => ({ name: a.name, value: a.options.length > 6 ? <span className="flex flex-wrap items-center gap-1.5">{a.options.slice(0, 24).map((o) => <Swatch key={o.id} color={o.color} image={o.image_url} />)}<span className="ml-1">{a.options.length} options, choose when you request a quote</span></span> : a.options.map(optionName).join(', ') })), ...p.specs].map((s) => <div key={s.name} className="flex gap-4 border-t border-slate-100 py-3 text-sm first:border-0"><dt className="w-36 shrink-0 text-mute">{s.name}</dt><dd className="font-semibold">{s.value}</dd></div>)}</dl></section>
         )}
       </div>
 

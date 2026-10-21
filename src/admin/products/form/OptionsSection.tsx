@@ -2,7 +2,9 @@ import { useEffect } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { api } from '../../../api/client'
 import type { CategoryAttribute } from '../../../api/types'
+import { PickerButton } from '../../../components/OptionPicker'
 import { Swatch } from '../../../components/Swatch'
+import { MANY, optionName } from '../../../lib/options'
 import { useFetch } from '../../../lib/useFetch'
 import type { ProductFormValues } from './schema'
 
@@ -33,13 +35,15 @@ export function OptionsSection() {
                 <fieldset key={a.id}>
                   <legend className="mb-2 text-sm font-bold">{a.name}</legend>
                   <div className="flex flex-wrap gap-2">
-                    {a.options.map((o) => {
-                      const on = field.value.includes(o.id)
-                      return (
-                        <button key={o.id} type="button" aria-pressed={on} onClick={() => field.onChange(on ? field.value.filter((x) => x !== o.id) : [...field.value, o.id])}
-                          className={`btn btn-sm gap-2 ${on ? 'bg-navy text-white shadow-btn' : 'bg-white text-ink ring-1 ring-inset ring-line hover:ring-navy'}`}><Swatch color={o.color} />{o.label}</button>
-                      )
-                    })}
+                    {a.options.length > MANY
+                      ? <PickerButton name={a.name} options={a.options} multi selected={field.value} onChange={(ids) => field.onChange([...field.value.filter((x) => !a.options.some((o) => o.id === x)), ...ids])} />
+                      : a.options.map((o) => {
+                        const on = field.value.includes(o.id)
+                        return (
+                          <button key={o.id} type="button" aria-pressed={on} onClick={() => field.onChange(on ? field.value.filter((x) => x !== o.id) : [...field.value, o.id])}
+                            className={`btn btn-sm gap-2 ${on ? 'bg-navy text-white shadow-btn' : 'bg-white text-ink ring-1 ring-inset ring-line hover:ring-navy'}`}><Swatch color={o.color} image={o.image_url} />{optionName(o)}</button>
+                        )
+                      })}
                     {a.options.length === 0 && <span className="text-sm text-mute">No options yet.</span>}
                   </div>
                 </fieldset>

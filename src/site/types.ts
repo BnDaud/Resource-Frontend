@@ -1,3 +1,4 @@
+import type { Option } from '../lib/options'
 import type { Section } from '../lib/sections'
 
 export type Availability = 'available' | 'out_of_stock' | 'on_request' | 'discontinued'
@@ -5,7 +6,6 @@ export type Availability = 'available' | 'out_of_stock' | 'on_request' | 'discon
 export interface Category { id: number; name: string; slug: string; description: string; section: Section; product_count: number; cover_image: string | null }
 export interface ProductImage { id: number; url: string; alt: string; is_main: boolean }
 interface Spec { name: string; value: string }
-export interface Option { id: number; label: string; color: string | null }
 /** A filter the website offers for a category or division. */
 export interface Attribute { id: number; name: string; options: Option[] }
 /** One attribute of a product with the options that product has. */

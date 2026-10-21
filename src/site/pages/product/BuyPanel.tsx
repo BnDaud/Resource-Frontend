@@ -2,18 +2,22 @@ import { Minus, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AvailabilityBadge, PriceLine } from '../../components/AvailabilityBadge'
+import { PickerButton } from '../../../components/OptionPicker'
 import { Swatch } from '../../../components/Swatch'
+import { MANY, optionName, type Option } from '../../../lib/options'
 import { WhatsAppButton } from '../../components/WhatsAppButton'
 import { useQuoteList } from '../../context/QuoteListContext'
-import type { Option, ProductDetail } from '../../types'
+import type { ProductDetail } from '../../types'
 
-function Pills({ label, options, value, onChange }: { label: string; options: Option[]; value: string; onChange: (v: string) => void }) {
+function Choice({ label, options, value, onChange }: { label: string; options: Option[]; value: Option | undefined; onChange: (v: Option | undefined) => void }) {
   return (
     <fieldset className="mt-5">
       <legend className="mb-2 text-sm font-bold">{label}</legend>
-      <div className="flex flex-wrap gap-2">
-        {options.map((o) => <button key={o.id} type="button" aria-pressed={value === o.label} onClick={() => onChange(value === o.label ? '' : o.label)}
-          className={`btn btn-sm gap-2 ${value === o.label ? 'bg-navy text-white shadow-btn' : 'bg-white text-ink ring-1 ring-inset ring-line hover:ring-navy'}`}><Swatch color={o.color} />{o.label}</button>)}
+      <div className="flex flex-wrap items-center gap-2">
+        {options.length > MANY
+          ? <PickerButton name={label} options={options} selected={value ? [value.id] : []} onChange={(ids) => onChange(options.find((o) => o.id === ids[0]))} />
+          : options.map((o) => <button key={o.id} type="button" aria-pressed={value?.id === o.id} onClick={() => onChange(value?.id === o.id ? undefined : o)}
+            className={`btn btn-sm gap-2 ${value?.id === o.id ? 'bg-navy text-white shadow-btn' : 'bg-white text-ink ring-1 ring-inset ring-line hover:ring-navy'}`}><Swatch color={o.color} image={o.image_url} />{optionName(o)}</button>)}
       </div>
     </fieldset>
   )
@@ -22,10 +26,10 @@ function Pills({ label, options, value, onChange }: { label: string; options: Op
 /** The choices a product offers (finish, colour, size, ...), quantity and the Add to quote action. The choices are saved as a note on the quote line. */
 export function BuyPanel({ product: p }: { product: ProductDetail }) {
   const { add, has } = useQuoteList()
-  const [chosen, setChosen] = useState<Record<number, string>>({})  // attribute id -> option label
+  const [chosen, setChosen] = useState<Record<number, Option>>({})  // attribute id -> the option the customer picked
   const [qty, setQty] = useState(1)
   const choices = p.attributes.filter((a) => a.customer_picks && a.options.length > 1)
-  const note = choices.filter((a) => chosen[a.id]).map((a) => `${a.name}: ${chosen[a.id]}`).join(', ')
+  const note = choices.filter((a) => chosen[a.id]).map((a) => `${a.name}: ${optionName(chosen[a.id])}`).join(', ')
   const added = has(p.id)
   const addNow = () => add({ productId: p.id, slug: p.slug, name: p.name, sku: p.sku, category: p.category_name, image: p.main_image, note }, qty)
 
@@ -37,7 +41,7 @@ export function BuyPanel({ product: p }: { product: ProductDetail }) {
       <div className="mt-4 flex flex-wrap items-center gap-3"><AvailabilityBadge value={p.availability} /><span className="text-xs text-mute">Availability is confirmed when we reply to your request.</span></div>
       <PriceLine mode={p.price_mode} price={p.public_price} className="mt-4 block font-display text-2xl font-bold" />
       {p.short_description && <p className="mt-4 leading-relaxed text-slate-600">{p.short_description}</p>}
-      {choices.map((a) => <Pills key={a.id} label={a.name} options={a.options} value={chosen[a.id] ?? ''} onChange={(v) => setChosen({ ...chosen, [a.id]: v })} />)}
+      {choices.map((a) => <Choice key={a.id} label={a.name} options={a.options} value={chosen[a.id]} onChange={(v) => setChosen(v ? { ...chosen, [a.id]: v } : Object.fromEntries(Object.entries(chosen).filter(([k]) => Number(k) !== a.id)))} />)}
 
       {p.availability === 'discontinued' ? <p className="mt-6 rounded-2xl bg-ice p-4 text-sm font-semibold">This product is discontinued. Contact us for alternatives.</p> : (
         <div className="mt-6 flex flex-wrap items-center gap-3">
