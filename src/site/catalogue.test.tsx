@@ -28,10 +28,32 @@ test('choosing a category and a sort order are sent to the API', async () => {
   api(siteHandler())
   mount('/products')
   await screen.findByRole('link', { name: 'Oak Door' })
-  await userEvent.click(within(screen.getByRole('group', { name: 'Categories' })).getByRole('button', { name: 'Edges Tape' }))
-  await waitFor(() => expect(calls.some((c) => c.url.includes('category=edges-tape'))).toBe(true))
+  await userEvent.click(within(screen.getByRole('group', { name: 'Categories' })).getByRole('button', { name: 'MDF' }))
+  await waitFor(() => expect(calls.some((c) => c.url.includes('category=mdf'))).toBe(true))
   await userEvent.selectOptions(screen.getByLabelText('Sort by'), 'newest')
   await waitFor(() => expect(calls.some((c) => c.url.includes('sort=newest'))).toBe(true))
+})
+
+test('the product page is split into Boards and Accessories, each with its own categories', async () => {
+  api(siteHandler())
+  mount('/products')
+  await screen.findByRole('link', { name: 'Oak Door' })
+  const chips = () => within(screen.getByRole('group', { name: 'Categories' })).getAllByRole('button').map((b) => b.textContent)
+  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Boards')
+  expect(chips()).toEqual(['All boards', 'HDF', 'MDF'])
+  await userEvent.click(within(screen.getByRole('group', { name: 'Division' })).getByRole('button', { name: 'Accessories' }))
+  await waitFor(() => expect(calls.some((c) => c.url.includes('section=accessories'))).toBe(true))
+  expect(chips()).toEqual(['All accessories', 'Edges Tape'])
+  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Accessories')
+})
+
+test('a link to a category opens in that category\'s division and asks the API for the category only', async () => {
+  api(siteHandler())
+  mount('/products?category=edges-tape')
+  await waitFor(() => expect(within(screen.getByRole('group', { name: 'Division' })).getByRole('button', { name: 'Accessories' })).toHaveAttribute('aria-pressed', 'true'))
+  const last = calls.filter((c) => c.url.includes('/api/v1/products')).slice(-1)[0].url
+  expect(last).toContain('category=edges-tape')
+  expect(last).not.toContain('section=')
 })
 
 test('no results shows a helpful empty state', async () => {

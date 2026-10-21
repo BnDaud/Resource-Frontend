@@ -11,14 +11,14 @@ export function Intro() {
       <Container>
         <div className="grid overflow-hidden rounded-[2rem] bg-navy text-white lg:grid-cols-2">
           <div className="p-8 sm:p-12">
-            <h2 className="text-2xl font-bold leading-tight tracking-tight sm:text-3xl">Suppliers of kitchen, furniture and building components</h2>
-            <p className="mt-4 leading-relaxed text-slate-300">{settings.business_name} supplies boards, doors, edge tape, profiles, kitchen accessories and more from Mushin, Lagos, to wholesale and retail customers.</p>
+            <h2 className="text-2xl font-bold leading-tight tracking-tight sm:text-3xl">Suppliers of boards and kitchen accessories</h2>
+            <p className="mt-4 leading-relaxed text-slate-300">{settings.business_name} supplies HDF, MDF and blockboard, microwaves, heat extractors, burners, edge tape and kitchen and furniture accessories from Mushin, Lagos, to wholesale and retail customers.</p>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl bg-white/10 p-5"><h3 className="font-bold text-gold">Wholesale</h3><p className="mt-1 text-sm text-slate-300">Bulk requests for contractors, workshops and resellers. Pricing confirmed by quotation.</p></div>
               <div className="rounded-2xl bg-white/10 p-5"><h3 className="font-bold text-gold">Retail</h3><p className="mt-1 text-sm text-slate-300">Homeowners and small projects welcome. Ask about availability.</p></div>
             </div>
           </div>
-          <div className="min-h-[16rem]"><img src="/site/door-lever.jpg" alt="Brass lever handle on a dark wooden door" loading="lazy" className="h-full w-full object-cover" /></div>
+          <div className="min-h-[16rem]"><img src="/site/board-colours.jpg" alt="Fan of wood-effect board colour samples" loading="lazy" className="h-full w-full object-cover" /></div>
         </div>
       </Container>
     </section>
@@ -26,7 +26,7 @@ export function Intro() {
 }
 
 const STEPS = [
-  ['Browse', 'Find components by category, name or SKU.'],
+  ['Browse', 'Find boards and accessories by division, category, name or SKU.'],
   ['Build your list', 'Add products and quantities. Your list is saved on this device.'],
   ['Send the request', 'Share your contact details as a wholesale or retail customer.'],
   ['We respond', 'Our team checks availability and prepares your quotation.'],

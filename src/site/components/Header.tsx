@@ -2,6 +2,7 @@ import { ChevronDown, ClipboardList, Menu, Search, X } from 'lucide-react'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../../api/client'
+import { SECTIONS } from '../../lib/sections'
 import { useFetch } from '../../lib/useFetch'
 import { useQuoteList } from '../context/QuoteListContext'
 import { useSettings } from '../context/SettingsContext'
@@ -30,12 +31,17 @@ function CategoriesMenu() {
     <div ref={box} className="relative">
       <button className={`${link} inline-flex items-center gap-1`} aria-expanded={open} aria-haspopup="true" onClick={() => setOpen((o) => !o)}>Categories <ChevronDown className="h-4 w-4" aria-hidden /></button>
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-3 w-[34rem] max-w-[90vw] rounded-3xl bg-white p-3 shadow-card ring-1 ring-line">
-          <ul className="grid grid-cols-2 gap-1">
-            {data?.map((c) => (
-              <li key={c.id}><Link to={`/products?category=${c.slug}`} onClick={() => setOpen(false)} className="flex items-center justify-between rounded-2xl px-3 py-2 text-sm font-semibold hover:bg-ice"><span>{c.name}</span><span className="text-xs text-mute">{c.product_count}</span></Link></li>
-            ))}
-          </ul>
+        <div className="absolute left-0 top-full z-50 mt-3 grid w-[40rem] max-w-[90vw] gap-4 rounded-3xl bg-white p-4 shadow-card ring-1 ring-line sm:grid-cols-[13rem_1fr]">
+          {SECTIONS.map((s) => (
+            <div key={s.id}>
+              <Link to={`/products?section=${s.id}`} onClick={() => setOpen(false)} className="mb-1 block px-3 text-xs font-bold uppercase tracking-wide text-gold-deep hover:underline">{s.label}</Link>
+              <ul className={s.id === 'accessories' ? 'grid grid-cols-2 gap-1' : 'space-y-1'}>
+                {data?.filter((c) => c.section === s.id).map((c) => (
+                  <li key={c.id}><Link to={`/products?section=${s.id}&category=${c.slug}`} onClick={() => setOpen(false)} className="flex items-center justify-between gap-2 rounded-2xl px-3 py-2 text-sm font-semibold hover:bg-ice"><span>{c.name}</span><span className="text-xs text-mute">{c.product_count}</span></Link></li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       )}
     </div>

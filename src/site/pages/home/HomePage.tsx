@@ -14,8 +14,8 @@ export default function HomePage() {
   const testimonials = useFetch(() => api.get<Testimonial[]>('/testimonials'), [])
   usePageMeta({
     title: 'Resources Components',
-    description: settings.seo_description || 'Quality components for kitchens, furniture and building projects. Browse the catalogue and request a wholesale or retail quotation.',
-    image: '/site/glass-partition.jpg',
+    description: settings.seo_description || 'Boards (HDF, MDF, blockboard) and kitchen accessories (microwaves, heat extractors, burners and more). Browse the catalogue and request a wholesale or retail quotation.',
+    image: '/site/boards.jpg',
   })
   return (
     <>

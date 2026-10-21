@@ -12,7 +12,7 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2.5 font-display text-lg font-bold text-white"><img src="/brand/logo-64.png" alt="" className="h-10 w-10" />{s.business_name}</div>
-            <p className="mt-3 max-w-sm leading-relaxed">Kitchen, furniture and building components. Wholesale and retail.</p>
+            <p className="mt-3 max-w-sm leading-relaxed">Boards and kitchen accessories. Wholesale and retail.</p>
             <address className="mt-3 not-italic leading-relaxed">{s.address}<br /><a href={directionsUrl} target="_blank" rel="noreferrer" className="font-semibold text-gold hover:underline">Get directions</a></address>
           </div>
           <nav aria-label="Footer" className="flex flex-col gap-2">

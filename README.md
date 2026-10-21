@@ -2,7 +2,7 @@
 
 One React app (Vite, TypeScript, Tailwind CSS):
 
-- **Customer website** at `/`: home, catalogue (search, filters, sorting, pagination), product pages, quote list and form, contact, track a request.
+- **Customer website** at `/`: home, catalogue split into Boards and Accessories (search, filters, sorting, pagination), product pages, quote list and form, contact, track a request.
 - **Staff CMS** at `/admin` (a small "Staff login" link in the footer). It is lazy-loaded, so customers never download it.
 
 It needs the API from the backend repo. In development Vite proxies `/api` and `/sitemap.xml` to `http://127.0.0.1:8000`, so cookies stay same-origin.

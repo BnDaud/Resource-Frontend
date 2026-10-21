@@ -1,6 +1,8 @@
+import type { Section } from '../lib/sections'
+
 export type Availability = 'available' | 'out_of_stock' | 'on_request' | 'discontinued'
 
-export interface Category { id: number; name: string; slug: string; description: string; product_count: number; cover_image: string | null }
+export interface Category { id: number; name: string; slug: string; description: string; section: Section; product_count: number; cover_image: string | null }
 export interface ProductImage { id: number; url: string; alt: string; is_main: boolean }
 interface Spec { name: string; value: string }
 

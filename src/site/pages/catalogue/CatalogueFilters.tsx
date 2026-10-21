@@ -1,14 +1,22 @@
 import { Search } from 'lucide-react'
+import { SECTIONS, type Section } from '../../../lib/sections'
 import type { Category } from '../../types'
 
-export interface Filters { q: string; category: string; availability: string; sort: string }
+export interface Filters { q: string; section: Section; category: string; availability: string; sort: string }
 
 const AVAILABILITY = [['', 'Any availability'], ['available', 'Available'], ['on_request', 'On request'], ['out_of_stock', 'Out of stock']]
 const SORTS = [['relevance', 'Relevance'], ['newest', 'Newest'], ['alpha', 'A to Z']]
 
 export function CatalogueFilters({ filters, categories, onChange }: { filters: Filters; categories: Category[]; onChange: (patch: Partial<Filters>) => void }) {
+  const inSection = categories.filter((c) => c.section === filters.section)
   return (
     <div className="space-y-4">
+      <div role="group" aria-label="Division" className="inline-flex rounded-full bg-white p-1 shadow-card ring-1 ring-line">
+        {SECTIONS.map((s) => (
+          <button key={s.id} aria-pressed={filters.section === s.id} onClick={() => onChange({ section: s.id, category: '' })}
+            className={`rounded-full px-6 py-2.5 text-sm font-bold transition ${filters.section === s.id ? 'bg-navy text-white shadow-btn' : 'text-slate-700 hover:text-ink'}`}>{s.label}</button>
+        ))}
+      </div>
       <div className="flex flex-wrap gap-3">
         <form role="search" className="relative min-w-[16rem] flex-1" onSubmit={(e) => e.preventDefault()}>
           <label className="sr-only" htmlFor="catalogue-search">Search products</label>
@@ -23,7 +31,7 @@ export function CatalogueFilters({ filters, categories, onChange }: { filters: F
         </select>
       </div>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Categories">
-        {[{ slug: '', name: 'All' }, ...categories].map((c) => {
+        {[{ slug: '', name: `All ${SECTIONS.find((s) => s.id === filters.section)?.label.toLowerCase()}` }, ...inSection].map((c) => {
           const on = filters.category === c.slug
           return <button key={c.slug} aria-pressed={on} onClick={() => onChange({ category: c.slug })} className={`btn btn-sm ${on ? 'bg-navy text-white shadow-btn' : 'bg-white text-ink ring-1 ring-inset ring-line hover:ring-navy'}`}>{c.name}</button>
         })}

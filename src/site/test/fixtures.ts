@@ -4,13 +4,13 @@ export const U1 = '11111111-1111-4111-8111-111111111111'
 const U2 = '22222222-2222-4222-8222-222222222222'
 
 export const product = (id: string, name: string, extra: Record<string, unknown> = {}) => ({
-  id, name, slug: name.toLowerCase().replace(/\s+/g, '-'), sku: `SKU-${name.length}`, category_id: 1, category_name: 'Flush Doors', brand: '',
+  id, name, slug: name.toLowerCase().replace(/\s+/g, '-'), sku: `SKU-${name.length}`, category_id: 1, category_name: 'HDF', brand: '',
   short_description: `${name} short`, availability: 'available', price_mode: 'request', public_price: null, is_featured: false, is_new: false,
   main_image: null, created_at: '2026-10-01T00:00:00Z', ...extra,
 })
-const detail = (p: ReturnType<typeof product>) => ({ ...p, description: 'Full description', sizes: ['2100x900'], colours: ['Oak'], specs: [{ name: 'Thickness', value: '40 mm' }], images: [], category_slug: 'flush-doors' })
+const detail = (p: ReturnType<typeof product>) => ({ ...p, description: 'Full description', sizes: ['2100x900'], colours: ['Oak'], specs: [{ name: 'Thickness', value: '40 mm' }], images: [], category_slug: 'hdf' })
 export const page = (items: unknown[]) => ({ items, total: items.length, page: 1, page_size: 12, pages: 1 })
-const category = (id: number, name: string, slug: string) => ({ id, name, slug, description: '', product_count: 2, cover_image: null, image_url: null, sort_order: id })
+const category = (id: number, name: string, slug: string, section: string) => ({ id, name, slug, description: '', section, product_count: 2, cover_image: null, sort_order: id })
 
 const settings = (over: Record<string, string> = {}) => ({
   business_name: 'Resources Components', address: '13 Amu Street, Mushin', opening_hours: '', phone: '', email: '', whatsapp_number: '',
@@ -26,7 +26,7 @@ export function siteHandler(extra: (url: string, init?: RequestInit) => Reply | 
     const e = extra(url, init)
     if (e) return e
     if (url.includes('/api/v1/settings')) return { status: 200, body: settings(over) }
-    if (url.includes('/api/v1/categories')) return { status: 200, body: [category(1, 'Flush Doors', 'flush-doors'), category(2, 'Edges Tape', 'edges-tape')] }
+    if (url.includes('/api/v1/categories')) return { status: 200, body: [category(1, 'HDF', 'hdf', 'boards'), category(2, 'MDF', 'mdf', 'boards'), category(3, 'Edges Tape', 'edges-tape', 'accessories')] }
     if (url.includes('/api/v1/testimonials')) return { status: 200, body: [] }
     if (/\/products\/[^/?]+\/related/.test(url)) return { status: 200, body: [] }
     if (url.includes('/products/oak-door')) return { status: 200, body: detail(DOOR) }

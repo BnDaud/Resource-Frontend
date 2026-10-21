@@ -1,3 +1,5 @@
+import type { Section } from '../lib/sections'
+
 export type Role = 'admin' | 'editor'
 export type Availability = 'available' | 'out_of_stock' | 'on_request' | 'discontinued'
 type PriceMode = 'request' | 'public'
@@ -5,7 +7,7 @@ export type QuoteStatus = 'new' | 'under_review' | 'quoted' | 'accepted' | 'reje
 export type EnquiryStatus = 'new' | 'read' | 'replied' | 'archived'
 
 export interface Staff { id: number; email: string; name: string; role: Role; is_active: boolean }
-export interface Category { id: number; name: string; slug: string; description: string; image_url: string | null; sort_order: number }
+export interface Category { id: number; name: string; slug: string; description: string; sort_order: number; section: Section }
 export interface ProductImage { id: number; url: string; alt: string; is_main: boolean; sort_order: number }
 interface Spec { name: string; value: string }
 export interface Product {

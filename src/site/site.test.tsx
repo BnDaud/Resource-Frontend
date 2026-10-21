@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, test } from 'vitest'
 import { calls, mount, useMockApi } from '../test/utils'
@@ -10,7 +10,7 @@ beforeEach(() => window.localStorage.clear())
 test('the homepage shows the headline and calls to action, and has a staff login link at the bottom', async () => {
   api(siteHandler())
   mount('/')
-  expect(await screen.findByRole('heading', { level: 1, name: /Quality Components for Kitchens/ })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { level: 1, name: /Quality Boards & Accessories/ })).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Explore Products' })).toHaveAttribute('href', '/products')
   expect(screen.getByRole('link', { name: 'Staff login' })).toHaveAttribute('href', '/admin')
   expect(screen.getAllByRole('link', { name: 'Request a Quote' })[0]).toHaveAttribute('href', '/quote')
@@ -51,4 +51,16 @@ test('the public website never calls the admin API or the session check', async 
   mount('/')
   await screen.findByRole('heading', { level: 1 })
   expect(calls.some((c) => c.url.includes('/admin/'))).toBe(false)
+})
+
+test('the Categories menu groups categories under Boards and Accessories, and each link keeps its division', async () => {
+  api(siteHandler())
+  mount('/')
+  const button = await screen.findByRole('button', { name: /categories/i })
+  await userEvent.click(button)
+  const menu = within(button.parentElement!)
+  expect(menu.getByRole('link', { name: 'Boards' })).toHaveAttribute('href', '/products?section=boards')
+  expect(menu.getByRole('link', { name: 'Accessories' })).toHaveAttribute('href', '/products?section=accessories')
+  expect(menu.getByRole('link', { name: /^HDF/ })).toHaveAttribute('href', '/products?section=boards&category=hdf')
+  expect(menu.getByRole('link', { name: /^Edges Tape/ })).toHaveAttribute('href', '/products?section=accessories&category=edges-tape')
 })
