@@ -69,7 +69,7 @@ export default function CataloguePage() {
       <div className="mt-6" aria-live="polite">
         {error && <ErrorNote message="We could not load the products. Check your connection." onRetry={reload} />}
         {loading && !data ? <ProductGridSkeleton />
-          : data && data.items.length === 0 ? <EmptyState title="No products match your search">Try a different word, or clear the filters.{filters.q && <> Or <button className="font-bold text-gold-deep" onClick={() => update({ section: other.id, category: '' })}>look in {other.label.toLowerCase()}</button>.</>} You can also <Link className="font-bold text-gold-deep" to="/contact">ask us</Link>.</EmptyState>
+          : data && data.items.length === 0 ? <EmptyState title="No products match your search">Try a different word, or {filters.opts.length > 0 ? <button className="font-bold text-gold-deep" onClick={() => update({ opts: [] })}>clear the filters</button> : 'clear the filters'}.{filters.q && <> Or <button className="font-bold text-gold-deep" onClick={() => update({ section: other.id, category: '' })}>look in {other.label.toLowerCase()}</button>.</>} You can also <Link className="font-bold text-gold-deep" to="/contact">ask us</Link>.</EmptyState>
           : data && <><div className={loading ? 'opacity-60 transition' : 'transition'}><ProductGrid products={data.items} /></div><Pagination page={data.page} pages={data.pages} onChange={(n) => update({}, n)} /></>}
       </div>
     </Container>

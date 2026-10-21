@@ -92,16 +92,29 @@ test('product page shows details and 404s cleanly for unknown products', async (
   expect(screen.getByText('Synthetic')).toBeInTheDocument()
 })
 
-test('filter chips for finish and colour are sent to the API as option ids, and cleared again', async () => {
+test('filter chips allow one choice per row, rows combine, and the filters can be cleared', async () => {
   api(siteHandler())
   mount('/products?section=boards&category=hdf')
   const filters = await screen.findByRole('group', { name: 'Filters' })
-  await userEvent.click(within(filters).getByRole('button', { name: 'Glossy' }))
-  await userEvent.click(within(filters).getByRole('button', { name: 'Red' }))
+  const chip = (name: string) => within(filters).getByRole('button', { name: name })
+  await userEvent.click(chip('Glossy'))
+  await userEvent.click(chip('Red'))
   await waitFor(() => expect(calls.some((c) => c.url.includes('opt=2') && c.url.includes('opt=3'))).toBe(true))
-  expect(within(filters).getByRole('button', { name: 'Glossy' })).toHaveAttribute('aria-pressed', 'true')
+  await userEvent.click(chip('Matte'))  // another choice in the same row replaces the first
+  expect(chip('Matte')).toHaveAttribute('aria-pressed', 'true')
+  expect(chip('Glossy')).toHaveAttribute('aria-pressed', 'false')
+  expect(chip('Red')).toHaveAttribute('aria-pressed', 'true')  // the other row is untouched
+  await userEvent.click(chip('Matte'))  // choosing it again clears the row
+  expect(chip('Matte')).toHaveAttribute('aria-pressed', 'false')
   await userEvent.click(within(filters).getByRole('button', { name: 'Clear filters' }))
-  await waitFor(() => expect(within(filters).getByRole('button', { name: 'Glossy' })).toHaveAttribute('aria-pressed', 'false'))
+  await waitFor(() => expect(chip('Red')).toHaveAttribute('aria-pressed', 'false'))
+})
+
+test('when filters leave nothing, the empty state offers to clear them', async () => {
+  api(siteHandler((url) => (url.includes('/api/v1/products?') ? { status: 200, body: page([]) } : undefined)))
+  mount('/products?section=boards&category=hdf&opt=2')
+  await userEvent.click(await screen.findByRole('button', { name: 'clear the filters' }))
+  await waitFor(() => expect(calls.filter((c) => c.url.includes('/api/v1/products?')).slice(-1)[0].url).not.toContain('opt='))
 })
 
 test('on a product page the customer chooses finish and colour, and the choices go into the quote line', async () => {
