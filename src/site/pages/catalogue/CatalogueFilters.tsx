@@ -10,14 +10,14 @@ const SORTS = [['relevance', 'Relevance'], ['newest', 'Newest'], ['alpha', 'A to
 export function CatalogueFilters({ filters, categories, onChange }: { filters: Filters; categories: Category[]; onChange: (patch: Partial<Filters>) => void }) {
   const inSection = categories.filter((c) => c.section === filters.section)
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div role="group" aria-label="Division" className="inline-flex rounded-full bg-white p-1 shadow-card ring-1 ring-line">
         {SECTIONS.map((s) => (
           <button key={s.id} aria-pressed={filters.section === s.id} onClick={() => onChange({ section: s.id, category: '' })}
             className={`rounded-full px-6 py-2.5 text-sm font-bold transition ${filters.section === s.id ? 'bg-navy text-white shadow-btn' : 'text-slate-700 hover:text-ink'}`}>{s.label}</button>
         ))}
       </div>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2 sm:gap-3">
         <form role="search" className="relative min-w-[16rem] flex-1" onSubmit={(e) => e.preventDefault()}>
           <label className="sr-only" htmlFor="catalogue-search">Search products</label>
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-mute" aria-hidden />
@@ -30,10 +30,10 @@ export function CatalogueFilters({ filters, categories, onChange }: { filters: F
           {SORTS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
         </select>
       </div>
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Categories">
+      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0" role="group" aria-label="Categories">
         {[{ slug: '', name: `All ${SECTIONS.find((s) => s.id === filters.section)?.label.toLowerCase()}` }, ...inSection].map((c) => {
           const on = filters.category === c.slug
-          return <button key={c.slug} aria-pressed={on} onClick={() => onChange({ category: c.slug })} className={`btn btn-sm ${on ? 'bg-navy text-white shadow-btn' : 'bg-white text-ink ring-1 ring-inset ring-line hover:ring-navy'}`}>{c.name}</button>
+          return <button key={c.slug} aria-pressed={on} onClick={() => onChange({ category: c.slug })} className={`btn btn-sm shrink-0 ${on ? 'bg-navy text-white shadow-btn' : 'bg-white text-ink ring-1 ring-inset ring-line hover:ring-navy'}`}>{c.name}</button>
         })}
       </div>
     </div>

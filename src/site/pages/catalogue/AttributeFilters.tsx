@@ -11,11 +11,11 @@ export function AttributeFilters({ groups, selected, onChange }: { groups: Attri
     onChange(selected.includes(id) || id < 0 ? others : [...others, id])
   }
   return (
-    <div className="space-y-3 rounded-3xl bg-white p-4 shadow-card" role="group" aria-label="Filters">
+    <div className="grid gap-x-6 gap-y-2 rounded-3xl bg-white p-3 shadow-card lg:grid-cols-2 sm:p-4" role="group" aria-label="Filters">
       {groups.map((g) => (
         <fieldset key={g.id} className="flex flex-wrap items-center gap-2">
           <legend className="sr-only">{g.name}</legend>
-          <span className="w-24 shrink-0 text-xs font-bold uppercase tracking-wide text-mute" aria-hidden>{g.name}</span>
+          <span className="w-20 shrink-0 text-xs font-bold uppercase tracking-wide text-mute" aria-hidden>{g.name}</span>
           {g.options.length > MANY
             ? <PickerButton name={g.name} options={g.options} selected={selected.filter((x) => g.options.some((o) => o.id === x))} onChange={(ids) => choose(g, ids[0] ?? -1)} />
             : g.options.map((o) => {
@@ -29,7 +29,7 @@ export function AttributeFilters({ groups, selected, onChange }: { groups: Attri
             })}
         </fieldset>
       ))}
-      {selected.length > 0 && <button type="button" className="text-sm font-bold text-gold-deep" onClick={() => onChange([])}>Clear filters</button>}
+      {selected.length > 0 && <button type="button" className="text-sm font-bold text-gold-deep lg:col-span-2 lg:justify-self-start" onClick={() => onChange([])}>Clear filters</button>}
     </div>
   )
 }

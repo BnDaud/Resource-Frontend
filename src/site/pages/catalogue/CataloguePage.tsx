@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
+import { SlidersHorizontal } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { api } from '../../../api/client'
 import { EmptyState, ErrorNote, Pagination } from '../../../components/ui'
 import { isSection, SECTIONS, type Section } from '../../../lib/sections'
 import { useDebounced } from '../../../lib/useDebounced'
+import { useIsDesktop } from '../../../lib/useIsDesktop'
 import { useFetch } from '../../../lib/useFetch'
 import { Container } from '../../components/Container'
 import { ProductGrid, ProductGridSkeleton } from '../../components/ProductCard'
@@ -22,6 +24,8 @@ export default function CataloguePage() {
   const section: Section = isSection(fromUrl) ? fromUrl : categories.data?.find((c) => c.slug === category)?.section ?? 'boards'
   const opts = params.getAll('opt').map(Number).filter(Number.isInteger)
   const filters: Filters = { q: params.get('q') ?? '', section, category, opts, availability: params.get('availability') ?? '', sort: params.get('sort') ?? 'relevance' }
+  const desktop = useIsDesktop()
+  const [showFilters, setShowFilters] = useState(false)
   const page = Math.max(1, Number(params.get('page')) || 1)
 
   // The search box edits local text immediately; the URL (and request) follow after a short pause.
@@ -61,12 +65,23 @@ export default function CataloguePage() {
   })
 
   return (
-    <Container className="py-10">
+    <Container className="py-6 sm:py-10">
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{current ? current.name : division.label}</h1>
-      <p className="mb-6 mt-1 text-sm text-mute">{data ? `${data.total} product${data.total === 1 ? '' : 's'}` : ' '}</p>
+      <p className="mb-4 mt-1 text-sm text-mute">{data ? `${data.total} product${data.total === 1 ? '' : 's'}` : ' '}</p>
       <CatalogueFilters filters={{ ...filters, q: text }} categories={categories.data ?? []} onChange={(patch) => ('q' in patch ? setText(patch.q ?? '') : update(patch))} />
-      <div className="mt-4"><AttributeFilters groups={attributes.data ?? []} selected={filters.opts} onChange={(ids) => update({ opts: ids })} /></div>
-      <div className="mt-6" aria-live="polite">
+      {(attributes.data?.length ?? 0) > 0 && (
+        <div className="mt-3">
+          {/* On a phone the filter rows would push the products off the screen, so they sit behind a button. */}
+          {!desktop && (
+            <button type="button" aria-expanded={showFilters} aria-controls="attribute-filters" onClick={() => setShowFilters((v) => !v)}
+              className="btn btn-sm gap-2 bg-white text-ink ring-1 ring-inset ring-line">
+              <SlidersHorizontal className="h-4 w-4" aria-hidden />Filters{filters.opts.length > 0 && <span className="rounded-full bg-navy px-2 text-xs text-white">{filters.opts.length}</span>}
+            </button>
+          )}
+          {(desktop || showFilters) && <div id="attribute-filters" className={desktop ? '' : 'mt-3'}><AttributeFilters groups={attributes.data ?? []} selected={filters.opts} onChange={(ids) => update({ opts: ids })} /></div>}
+        </div>
+      )}
+      <div className="mt-5" aria-live="polite">
         {error && <ErrorNote message="We could not load the products. Check your connection." onRetry={reload} />}
         {loading && !data ? <ProductGridSkeleton />
           : data && data.items.length === 0 ? <EmptyState title="No products match your search">Try a different word, or {filters.opts.length > 0 ? <button className="font-bold text-gold-deep" onClick={() => update({ opts: [] })}>clear the filters</button> : 'clear the filters'}.{filters.q && <> Or <button className="font-bold text-gold-deep" onClick={() => update({ section: other.id, category: '' })}>look in {other.label.toLowerCase()}</button>.</>} You can also <Link className="font-bold text-gold-deep" to="/contact">ask us</Link>.</EmptyState>
